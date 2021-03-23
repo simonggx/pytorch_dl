@@ -5,6 +5,22 @@ import torch.onnx
 import netron
 
 
+import torch
+model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+print(model)
+d = torch.rand(1, 3, 640, 640)
+onnx_path = "onnx_yolov5s.onnx"
+torch.onnx.export(model, d, onnx_path)
+ 
+netron.start(onnx_path)
+
+
+
+
+
+
+
+
 # 用于ResNet18和34的残差块，用的是2个3x3的卷积
 class BasicBlock(nn.Module):
     expansion = 1
@@ -13,9 +29,7 @@ class BasicBlock(nn.Module):
         super(BasicBlock, self).__init__()
         self.conv1 = nn.Conv2d(in_planes, planes, kernel_size=3,
                                stride=stride, padding=1, bias=False)
-        self.bn1 = nn.BatchNorm2d(planes)
-        self.conv2 = nn.Conv2d(planes, planes, kernel_size=3,
-                               stride=1, padding=1, bias=False)
+        self.bn1 = nn.BatchNorm2d(planem, padding=1, bias=False)
         self.bn2 = nn.BatchNorm2d(planes)
         self.shortcut = nn.Sequential()
         # 经过处理后的x要与x的维度相同(尺寸和深度)
@@ -65,7 +79,7 @@ class Bottleneck(nn.Module):
         out = self.bn3(self.conv3(out))
         out += self.shortcut(x)
         out = F.relu(out)
-        return out
+        return outm
 
 
 class ResNet(nn.Module):
@@ -99,33 +113,24 @@ class ResNet(nn.Module):
         out = self.layer4(out)
         out = F.avg_pool2d(out, 4)
         out = out.view(out.size(0), -1)
-        out = self.linear(out)
-        return out
+        out = self.linear(out)m
+d = torch.rand(1, 3, 32, 32)
+# d = torch.rand(1, 3, 224, 224) why wrong?
+# d = torch.rand(1, 3, 416, 416) why wrong?
 
+m = ResNet50()
+o = m(d)
+ 
+onnx_path = "onnx_resnet50.onnx"
+torch.onnx.export(m, d, onnx_path)
+ 
+netron.start(onnx_path)
 
-def ResNet18():
-    return ResNet(BasicBlock, [2,2,2,2])
-
-def ResNet34():
-    return ResNet(BasicBlock, [3,4,6,3])
-
-def ResNet50():
-    return ResNet(Bottleneck, [3,4,6,3])
-
-def ResNet101():
-    return ResNet(Bottleneck, [3,4,23,3])
-
-def ResNet152():
-    return ResNet(Bottleneck, [3,8,36,3])
-
+def ResNet152():model
 
 def test():
     net = ResNet18()
-    y = net(torch.randn(1,3,32,32))
-    print(y.size())
-
-# test()
-
+    y = net(torch.randn(1,3,32,32))m
 d = torch.rand(1, 3, 32, 32)
 # d = torch.rand(1, 3, 224, 224) why wrong?
 # d = torch.rand(1, 3, 416, 416) why wrong?
